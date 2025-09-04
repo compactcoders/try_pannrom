@@ -47,12 +47,13 @@ const AudioUpload = () => {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/50 backdrop-blur-xl border border-cyan-500/30 shadow-2xl overflow-hidden relative neon-border hover:glow-cyan transition-all duration-500 group slide-in-left">
+    <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/50 backdrop-blur-xl border border-cyan-500/30 shadow-2xl overflow-hidden relative neon-border hover:glow-cyan transition-all duration-500 group slide-in-left interactive-glow wave-animation magnetic-field hover-lift">
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/5 to-transparent circuit-pattern" />
+      <div className="absolute inset-0 energy-field" />
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
-      <CardHeader className="scan-line">
+      <CardHeader className="scan-line parallax-slow">
         <CardTitle className="flex items-center gap-3 text-xl font-bold text-white relative z-10 group-hover:text-cyan-300 transition-colors duration-300">
-          <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-xl flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-300 hologram">
+          <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-xl flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-300 hologram breathing energy-ripple">
             <Mic className="h-6 w-6 text-white relative z-10" />
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-full group-hover:translate-x-[-200%] transition-transform duration-700" />
           </div>
@@ -63,7 +64,7 @@ const AudioUpload = () => {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6 relative z-10 data-stream">
+      <CardContent className="space-y-6 relative z-10 data-stream parallax-medium">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
             <Label htmlFor="session" className="text-cyan-300 font-mono font-bold text-xs uppercase tracking-widest flex items-center space-x-2">
@@ -74,7 +75,7 @@ const AudioUpload = () => {
               id="session" 
               value={sessionId} 
               onChange={(e) => setSessionId(e.target.value)}
-              className="bg-slate-900/50 border-cyan-500/30 text-cyan-100 placeholder:text-slate-500 focus:border-cyan-400 focus:glow-cyan font-mono transition-all duration-300 hover:bg-slate-800/50"
+              className="bg-slate-900/50 border-cyan-500/30 text-cyan-100 placeholder:text-slate-500 focus:border-cyan-400 focus:glow-cyan font-mono transition-all duration-300 hover:bg-slate-800/50 magnetic"
             />
           </div>
           <div className="space-y-2">
@@ -83,7 +84,7 @@ const AudioUpload = () => {
               id="user" 
               value={userId} 
               onChange={(e) => setUserId(e.target.value)}
-              className="bg-slate-900/50 border-purple-500/30 text-purple-100 placeholder:text-slate-500 focus:border-purple-400 focus:glow-purple font-mono transition-all duration-300 hover:bg-slate-800/50"
+              className="bg-slate-900/50 border-purple-500/30 text-purple-100 placeholder:text-slate-500 focus:border-purple-400 focus:glow-purple font-mono transition-all duration-300 hover:bg-slate-800/50 magnetic"
             />
           </div>
           <div className="space-y-2">
@@ -92,7 +93,7 @@ const AudioUpload = () => {
               id="blog" 
               value={blogId} 
               onChange={(e) => setBlogId(e.target.value)}
-              className="bg-slate-900/50 border-pink-500/30 text-pink-100 placeholder:text-slate-500 focus:border-pink-400 focus:glow-pink font-mono transition-all duration-300 hover:bg-slate-800/50"
+              className="bg-slate-900/50 border-pink-500/30 text-pink-100 placeholder:text-slate-500 focus:border-pink-400 focus:glow-pink font-mono transition-all duration-300 hover:bg-slate-800/50 magnetic"
             />
           </div>
         </div>
@@ -105,7 +106,7 @@ const AudioUpload = () => {
               type="file" 
               accept="audio/*" 
               onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="bg-slate-900/50 border-white/20 text-white file:bg-gradient-to-r file:from-cyan-500 file:to-purple-600 file:text-white file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4 file:font-mono file:font-bold file:shadow-lg hover:border-cyan-500/50 transition-all duration-300"
+              className="bg-slate-900/50 border-white/20 text-white file:bg-gradient-to-r file:from-cyan-500 file:to-purple-600 file:text-white file:border-0 file:rounded-lg file:px-4 file:py-2 file:mr-4 file:font-mono file:font-bold file:shadow-lg hover:border-cyan-500/50 transition-all duration-300 magnetic"
             />
           </div>
         </div>
@@ -114,7 +115,7 @@ const AudioUpload = () => {
           <Button 
             onClick={handleUpload} 
             disabled={!file}
-            className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-mono font-bold px-8 py-4 rounded-xl shadow-2xl border border-cyan-500/30 flex items-center space-x-3 hover:scale-105 hover:glow-cyan transition-all duration-300 relative overflow-hidden group"
+            className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-mono font-bold px-8 py-4 rounded-xl shadow-2xl border border-cyan-500/30 flex items-center space-x-3 hover:scale-105 hover:glow-cyan transition-all duration-300 relative overflow-hidden group magnetic energy-ripple"
           >
             <Upload className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
             <span className="tracking-wider">PROCESS.AUDIO</span>
@@ -129,12 +130,12 @@ const AudioUpload = () => {
         </div>
         
         {progress > 0 && (
-          <div className="space-y-3 fade-in-up">
+          <div className="space-y-3 fade-in-up wave-animation">
             <div className="flex justify-between text-sm font-mono">
               <span className="text-slate-300 tracking-wider">PROCESSING...</span>
               <span className="text-cyan-400 font-bold tracking-widest">{progress}%</span>
             </div>
-            <Progress value={progress} className="h-3 bg-slate-900/50 border border-cyan-500/30 rounded-full overflow-hidden">
+            <Progress value={progress} className="h-3 bg-slate-900/50 border border-cyan-500/30 rounded-full overflow-hidden energy-ripple">
               <div className="h-full bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 transition-all duration-300 relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
               </div>
