@@ -44,7 +44,6 @@ const BlogManager = () => {
               <Plus className="w-5 h-5" />
               <span className="tracking-wider">ADD.CONTENT</span>
             </Button>
-            </Button>
           </DialogTrigger>
           <DialogContent className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-purple-500/30 text-white backdrop-blur-xl neon-border">
             <DialogHeader>
