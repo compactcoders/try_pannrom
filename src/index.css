@@ -1,209 +1,403 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { useEffect, useState } from "react"
-import api from "@/services/api"
-import { MessageSquare, Send, Bot, User, Zap, Settings } from "lucide-react"
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-const Chatbot = () => {
-  const [messages, setMessages] = useState<{ sender: string, text: string }[]>([])
-  const [input, setInput] = useState("")
-  const [sessionId, setSessionId] = useState<string>("")
-  const [userId, setUserId] = useState<string>("")
-  const [blogId, setBlogId] = useState<string>("")
-
-  useEffect(() => {
-    const refresh = () => {
-      setSessionId(localStorage.getItem("lastSessionId") || "")
-      setUserId(localStorage.getItem("lastUserId") || "")
-      setBlogId(localStorage.getItem("lastBlogId") || "")
-    }
-    refresh()
-    const onStorage = () => refresh()
-    const onPanda = () => refresh()
-    window.addEventListener("storage", onStorage)
-    window.addEventListener("panda-context-updated", onPanda as EventListener)
-    return () => {
-      window.removeEventListener("storage", onStorage)
-      window.removeEventListener("panda-context-updated", onPanda as EventListener)
-    }
-  }, [])
-
-  const handleSend = async () => {
-    if (!input) return
-    const userMessage = { sender: "user", text: input }
-    setMessages(prev => [...prev, userMessage])
-    setInput("")
-
-    const activeSession = sessionId || localStorage.getItem("lastSessionId") || ""
-    const activeUser = userId || localStorage.getItem("lastUserId") || ""
-    const activeBlog = blogId || localStorage.getItem("lastBlogId") || ""
-
-    let response: any
-    try {
-      if (activeUser && activeBlog) {
-        response = await api.chat("blog", { user_id: activeUser, blog_id: activeBlog, question: userMessage.text })
-      } else if (activeSession) {
-        response = await fetch("http://localhost:8000/query", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ session_id: activeSession, question: userMessage.text })
-        }).then(r => r.json())
-      } else if (activeUser) {
-        response = await api.chat("profile", { user_id: activeUser, question: userMessage.text })
-      } else {
-        response = { answer: "No context available. Set a User ID + Blog ID (preferred) or a Session ID." }
-      }
-    } catch (e: any) {
-      response = { answer: e?.message || "Error answering question." }
-    }
-
-    const botMessage = { sender: "bot", text: response.answer }
-    setMessages(prev => [...prev, botMessage])
-  }
-
-  return (
-    <Card className="flex flex-col h-[700px] bg-gradient-to-br from-slate-900/90 to-slate-800/50 backdrop-blur-xl border border-cyan-500/30 shadow-2xl overflow-hidden relative neon-border hover:glow-cyan transition-all duration-300 group fade-in-smooth subtle-glow">
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/5 to-pink-500/5 circuit-pattern" />
-      <div className="absolute inset-0 energy-field" />
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
-      <CardHeader>
-        <CardTitle className="flex items-center gap-3 text-xl font-bold text-white relative z-10 group-hover:text-cyan-300 transition-colors duration-300">
-          <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-purple-600 rounded-xl flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300 gentle-float">
-            <MessageSquare className="h-6 w-6 text-white relative z-10" />
-          </div>
-          <span className="font-mono tracking-wider">AI.ASSISTANT</span>
-          <div className="ml-auto flex items-center space-x-3">
-            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-xs text-green-400 font-mono font-bold tracking-widest">ONLINE</span>
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-grow space-y-4 relative z-10">
-        {/* Context Configuration */}
-        <div className="space-y-3 p-4 rounded-xl bg-slate-900/60 border border-cyan-500/20 neon-border hover:glow-cyan transition-all duration-300">
-          <div className="flex items-center space-x-2 mb-3">
-            <Settings className="w-4 h-4 text-cyan-400" />
-            <span className="text-sm font-mono font-bold text-cyan-300 tracking-widest">CONTEXT.CONFIG</span>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-3">
-            <div className="flex space-x-2">
-              <Input 
-                value={userId} 
-                onChange={(e) => setUserId(e.target.value)} 
-                placeholder="User ID for profile/blog chat"
-                className="flex-1 bg-slate-900/50 border-cyan-500/30 text-cyan-100 placeholder:text-slate-500 text-xs focus:border-cyan-400 focus:glow-cyan font-mono transition-all duration-300"
-              />
-              <Button 
-                type="button" 
-                onClick={() => localStorage.setItem("lastUserId", userId)} 
-                size="sm"
-                className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-white border border-cyan-500/30 px-4 font-mono font-bold hover:scale-105 transition-all duration-300 hover:glow-cyan"
-              >
-                SET
-              </Button>
-            </div>
-            
-            <div className="flex space-x-2">
-              <Input 
-                value={blogId} 
-                onChange={(e) => setBlogId(e.target.value)} 
-                placeholder="Blog ID (preferred with User ID)"
-                className="flex-1 bg-slate-900/50 border-purple-500/30 text-purple-100 placeholder:text-slate-500 text-xs focus:border-purple-400 focus:glow-purple font-mono transition-all duration-300"
-              />
-              <Button 
-                type="button" 
-                onClick={() => localStorage.setItem("lastBlogId", blogId)} 
-                size="sm"
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-400 hover:to-purple-500 text-white border border-purple-500/30 px-4 font-mono font-bold hover:scale-105 transition-all duration-300 hover:glow-purple"
-              >
-                SET
-              </Button>
-            </div>
-            
-            <div className="flex space-x-2">
-              <Input 
-                value={sessionId} 
-                onChange={(e) => setSessionId(e.target.value)} 
-                placeholder="Session ID (fallback)"
-                className="flex-1 bg-slate-900/50 border-pink-500/30 text-pink-100 placeholder:text-slate-500 text-xs focus:border-pink-400 focus:glow-pink font-mono transition-all duration-300"
-              />
-              <Button 
-                type="button" 
-                onClick={() => localStorage.setItem("lastSessionId", sessionId)} 
-                size="sm"
-                className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-400 hover:to-pink-500 text-white border border-pink-500/30 px-4 font-mono font-bold hover:scale-105 transition-all duration-300 hover:glow-pink"
-              >
-                SET
-              </Button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Chat Messages */}
-        <ScrollArea className="h-[380px] pr-4">
-          <div className="space-y-4">
-            {messages.length === 0 && (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 gentle-float">
-                  <Bot className="w-8 h-8 text-cyan-400 animate-pulse" />
-                </div>
-                <p className="text-slate-400 text-sm font-mono tracking-wider">INITIALIZE.CONVERSATION.PROTOCOL</p>
-              </div>
-            )}
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex items-start space-x-3 ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''} fade-in-smooth`}>
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 relative overflow-hidden hover:scale-105 transition-transform duration-300 ${
-                  msg.sender === 'user' 
-                    ? 'bg-gradient-to-br from-cyan-400 to-cyan-600' 
-                    : 'bg-gradient-to-br from-purple-400 to-purple-600'
-                }`}>
-                  {msg.sender === 'user' ? (
-                    <User className="w-5 h-5 text-white relative z-10" />
-                  ) : (
-                    <Bot className="w-5 h-5 text-white relative z-10" />
-                  )}
-                </div>
-                <div className={`px-4 py-3 rounded-2xl max-w-[80%] shadow-2xl border transition-all duration-300 hover:scale-[1.02] font-mono ${
-                  msg.sender === 'user' 
-                    ? 'bg-gradient-to-br from-cyan-500/80 to-cyan-600/80 text-white border-cyan-500/30 hover:glow-cyan' 
-                    : 'bg-gradient-to-br from-slate-900/80 to-slate-800/60 text-slate-200 border-white/20 hover:border-purple-500/30 hover:glow-purple'
-                }`}>
-                  <p className="text-sm leading-relaxed tracking-wide">{msg.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </CardContent>
-      
-      {/* Chat Input */}
-      <div className="p-6 border-t border-cyan-500/20 relative z-10 bg-gradient-to-r from-slate-900/50 to-slate-800/30 backdrop-blur-sm">
-        <div className="flex space-x-3">
-          <div className="relative flex-1">
-            <Zap className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-pulse" />
-            <Input 
-              value={input} 
-              onChange={(e) => setInput(e.target.value)} 
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()} 
-              placeholder="Ask anything about your knowledge base..."
-              className="pl-11 bg-slate-900/50 border-cyan-500/30 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:glow-cyan py-4 font-mono tracking-wide transition-all duration-300 hover:bg-slate-800/50"
-            />
-          </div>
-          <Button 
-            onClick={handleSend}
-            className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-mono font-bold px-6 py-4 rounded-xl shadow-2xl border border-cyan-500/30 flex items-center space-x-2 hover:scale-105 hover:glow-cyan transition-all duration-300 relative overflow-hidden group"
-          >
-            <Send className="w-5 h-5 transition-transform duration-300" />
-          </Button>
-        </div>
-      </div>
-    </Card>
-  )
+* {
+  font-family: 'JetBrains Mono', monospace;
 }
 
-export default Chatbot
+/* Custom Cursor */
+body {
+  cursor: none;
+}
+
+.custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.8) 0%, rgba(139, 92, 246, 0.4) 50%, transparent 100%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  transition: transform 0.1s ease-out;
+}
+
+.custom-cursor::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #8b5cf6;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #8b5cf6;
+}
+
+.cursor-trail {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background: rgba(139, 92, 246, 0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Animated Background Elements */
+.floating-orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.2), transparent);
+  filter: blur(1px);
+  animation: float-complex 20s infinite ease-in-out;
+}
+
+.floating-orb:nth-child(1) {
+  width: 300px;
+  height: 300px;
+  top: 10%;
+  left: 80%;
+  animation-delay: 0s;
+  animation-duration: 25s;
+}
+
+.floating-orb:nth-child(2) {
+  width: 200px;
+  height: 200px;
+  top: 60%;
+  left: 10%;
+  animation-delay: -8s;
+  animation-duration: 30s;
+}
+
+.floating-orb:nth-child(3) {
+  width: 150px;
+  height: 150px;
+  top: 30%;
+  left: 60%;
+  animation-delay: -15s;
+  animation-duration: 22s;
+}
+
+.floating-orb:nth-child(4) {
+  width: 100px;
+  height: 100px;
+  top: 80%;
+  left: 70%;
+  animation-delay: -5s;
+  animation-duration: 18s;
+}
+
+.floating-orb:nth-child(5) {
+  width: 250px;
+  height: 250px;
+  top: 20%;
+  left: 20%;
+  animation-delay: -12s;
+  animation-duration: 28s;
+}
+
+@keyframes float-complex {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(100px, -50px) rotate(90deg) scale(1.1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50px, -100px) rotate(180deg) scale(0.9);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translate(-100px, 50px) rotate(270deg) scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+/* Particle System */
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(139, 92, 246, 0.6);
+  border-radius: 50%;
+  animation: particle-float 15s infinite linear;
+}
+
+.particle:nth-child(odd) {
+  background: rgba(236, 72, 153, 0.6);
+  animation-duration: 18s;
+}
+
+.particle:nth-child(3n) {
+  background: rgba(34, 211, 238, 0.6);
+  animation-duration: 12s;
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(90vh) translateX(10px) scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(10vh) translateX(-10px) scale(1);
+  }
+  100% {
+    transform: translateY(-10vh) translateX(0) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Neural Network Lines */
+.neural-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
+  animation: neural-pulse 8s infinite ease-in-out;
+}
+
+.neural-line:nth-child(1) {
+  top: 20%;
+  left: 0;
+  width: 100%;
+  animation-delay: 0s;
+}
+
+.neural-line:nth-child(2) {
+  top: 60%;
+  left: 0;
+  width: 100%;
+  animation-delay: -3s;
+}
+
+.neural-line:nth-child(3) {
+  top: 80%;
+  left: 0;
+  width: 100%;
+  animation-delay: -6s;
+}
+
+@keyframes neural-pulse {
+  0%, 100% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+/* Geometric Shapes */
+.geometric-shape {
+  position: absolute;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  animation: geometric-rotate 30s infinite linear;
+}
+
+.geometric-shape:nth-child(1) {
+  width: 100px;
+  height: 100px;
+  top: 15%;
+  right: 10%;
+  animation-delay: 0s;
+}
+
+.geometric-shape:nth-child(2) {
+  width: 60px;
+  height: 60px;
+  bottom: 20%;
+  left: 15%;
+  animation-delay: -10s;
+  border-radius: 50%;
+}
+
+.geometric-shape:nth-child(3) {
+  width: 80px;
+  height: 80px;
+  top: 50%;
+  right: 30%;
+  animation-delay: -20s;
+  transform: rotate(45deg);
+}
+
+@keyframes geometric-rotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.2;
+  }
+}
+
+/* Morphing Background */
+.morphing-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, 
+    rgba(15, 23, 42, 0.95), 
+    rgba(30, 41, 59, 0.9), 
+    rgba(51, 65, 85, 0.85),
+    rgba(15, 23, 42, 0.95)
+  );
+  background-size: 400% 400%;
+  animation: morphing-gradient 20s ease infinite;
+  z-index: -1;
+}
+
+@keyframes morphing-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Pleasant Component Animations */
+.gentle-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gentle-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.15);
+}
+
+.subtle-scale {
+  transition: transform 0.2s ease-out;
+}
+
+.subtle-scale:hover {
+  transform: scale(1.02);
+}
+
+.gentle-glow {
+  transition: box-shadow 0.3s ease-out;
+}
+
+.gentle-glow:hover {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.smooth-fade {
+  transition: opacity 0.3s ease-out;
+}
+
+.icon-float {
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Neon Effects */
+.neon-border {
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 
+    0 0 5px rgba(139, 92, 246, 0.2),
+    inset 0 0 5px rgba(139, 92, 246, 0.1);
+}
+
+.glow-purple:hover {
+  box-shadow: 
+    0 0 20px rgba(139, 92, 246, 0.4),
+    inset 0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.glow-cyan:hover {
+  box-shadow: 
+    0 0 20px rgba(34, 211, 238, 0.4),
+    inset 0 0 20px rgba(34, 211, 238, 0.1);
+}
+
+.glow-pink:hover {
+  box-shadow: 
+    0 0 20px rgba(236, 72, 153, 0.4),
+    inset 0 0 20px rgba(236, 72, 153, 0.1);
+}
+
+/* Circuit Pattern */
+.circuit-pattern {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(236, 72, 153, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Energy Field */
+.energy-field {
+  background: 
+    linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.05) 50%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, rgba(236, 72, 153, 0.05) 50%, transparent 100%);
+  animation: energy-pulse 4s ease-in-out infinite;
+}
+
+@keyframes energy-pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Fade In Animation */
+.fade-in-smooth {
+  animation: fadeInSmooth 0.6s ease-out;
+}
+
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Magnetic Effect */
+.magnetic {
+  transition: transform 0.2s ease-out;
+}
+
+.magnetic:hover {
+  transform: translateY(-1px);
+}
+
+/* Subtle Glow */
+.subtle-glow {
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.1);
+}
