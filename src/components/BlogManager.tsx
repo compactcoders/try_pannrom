@@ -43,6 +43,7 @@ const BlogManager = () => {
             <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-mono font-bold rounded-xl shadow-2xl border border-purple-500/30 flex items-center space-x-3 hover:scale-102 subtle-glow transition-all duration-300 px-6 py-3 magnetic">
               <Plus className="w-5 h-5" />
               <span className="tracking-wider">ADD.CONTENT</span>
+            </Button>
           </DialogTrigger>
           <DialogContent className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-purple-500/30 text-white backdrop-blur-xl neon-border">
             <DialogHeader>
