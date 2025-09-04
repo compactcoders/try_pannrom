@@ -32,7 +32,6 @@ const BlogManager = () => {
       <CardHeader className="flex flex-row items-center justify-between relative z-10">
         <CardTitle className="flex items-center gap-3 text-xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300">
           <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-600 rounded-xl flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300 gentle-float">
-            <BookOpen className="h-6 w-6 text-white relative z-10" />
           </div>
           <span className="font-mono tracking-wider">KNOWLEDGE.BASE</span>
           <span className="text-xs px-3 py-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full border border-purple-500/30 text-purple-300 font-mono font-bold tracking-widest">
@@ -41,10 +40,9 @@ const BlogManager = () => {
         </CardTitle>
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-mono font-bold rounded-xl shadow-2xl border border-purple-500/30 flex items-center space-x-3 hover:scale-105 hover:glow-purple transition-all duration-300 relative overflow-hidden group px-6 py-3">
-              <Plus className="w-5 h-5 transition-transform duration-300" />
+            <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-mono font-bold rounded-xl shadow-2xl border border-purple-500/30 flex items-center space-x-3 hover:scale-102 subtle-glow transition-all duration-300 px-6 py-3 magnetic">
+              <Plus className="w-5 h-5" />
               <span className="tracking-wider">ADD.CONTENT</span>
-            </Button>
           </DialogTrigger>
           <DialogContent className="bg-gradient-to-br from-slate-900/95 to-slate-800/90 border border-purple-500/30 text-white backdrop-blur-xl neon-border">
             <DialogHeader>
@@ -83,7 +81,7 @@ const BlogManager = () => {
                   className="bg-slate-900/50 border-purple-500/30 text-white placeholder:text-slate-500 focus:border-purple-400 focus:glow-purple font-mono min-h-[120px] transition-all duration-300"
                 />
               </div>
-              <Button type="submit" className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-mono font-bold py-4 rounded-xl shadow-2xl border border-purple-500/30 hover:scale-105 hover:glow-purple transition-all duration-300 relative overflow-hidden group tracking-wider">
+              <Button type="submit" className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-mono font-bold py-4 rounded-xl shadow-2xl border border-purple-500/30 hover:scale-102 subtle-glow transition-all duration-300 tracking-wider magnetic">
                 CREATE.KNOWLEDGE.ITEM
               </Button>
             </form>
@@ -94,11 +92,11 @@ const BlogManager = () => {
         {blogs.length > 0 ? (
           <div className="space-y-4">
             {blogs.map((blog: any) => (
-              <div key={blog.blogId} className="group p-6 rounded-xl bg-gradient-to-br from-slate-900/60 to-slate-800/30 backdrop-blur-sm border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:transform hover:scale-[1.02] hover:glow-purple subtle-glow">
+              <div key={blog.blogId} className="group p-6 rounded-xl bg-gradient-to-br from-slate-900/60 to-slate-800/30 backdrop-blur-sm border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:transform hover:scale-[1.01] subtle-glow magnetic">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                      <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300 gentle-float">
                         <FileText className="w-4 h-4 text-white transition-transform duration-300" />
                       </div>
                       <h3 className="font-mono font-bold text-white group-hover:text-purple-300 transition-colors duration-300 tracking-wide">{blog.title}</h3>

@@ -54,7 +54,6 @@ const AudioUpload = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-3 text-xl font-bold text-white relative z-10 group-hover:text-cyan-300 transition-colors duration-300">
           <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-xl flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300 gentle-float">
-            <Mic className="h-6 w-6 text-white relative z-10" />
           </div>
           <span className="font-mono tracking-wider">AUDIO.INTELLIGENCE</span>
           <div className="ml-auto flex items-center space-x-3">
@@ -114,9 +113,9 @@ const AudioUpload = () => {
           <Button 
             onClick={handleUpload} 
             disabled={!file}
-            className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-mono font-bold px-8 py-4 rounded-xl shadow-2xl border border-cyan-500/30 flex items-center space-x-3 hover:scale-105 hover:glow-cyan transition-all duration-300 relative overflow-hidden group"
+            className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-mono font-bold px-8 py-4 rounded-xl shadow-2xl border border-cyan-500/30 flex items-center space-x-3 hover:scale-102 subtle-glow transition-all duration-300 magnetic"
           >
-            <Upload className="w-5 h-5 transition-transform duration-300" />
+            <Upload className="w-5 h-5" />
             <span className="tracking-wider">PROCESS.AUDIO</span>
           </Button>
           {message && (
