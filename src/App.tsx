@@ -34,13 +34,13 @@ function App() {
     }
 
     const handleMouseEnter = (e: Event) => {
-      if ((e.target as Element).matches('button, input, a, [role="button"]')) {
+      if (e.target instanceof Element && e.target.matches('button, input, a, [role="button"]')) {
         document.querySelector('.custom-cursor')?.classList.add('hover')
       }
     }
 
     const handleMouseLeave = (e: Event) => {
-      if ((e.target as Element).matches('button, input, a, [role="button"]')) {
+      if (e.target instanceof Element && e.target.matches('button, input, a, [role="button"]')) {
         document.querySelector('.custom-cursor')?.classList.remove('hover')
       }
     }
