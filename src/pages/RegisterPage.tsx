@@ -1,109 +1,154 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import api from "@/services/api"
-import { useNavigate } from "react-router-dom"
-import { User, Building2, Lock, Mail, UserPlus } from "lucide-react"
+import { User, Building2, Lock, Mail, UserPlus, ArrowLeft } from "lucide-react"
 
 const RegisterPage = () => {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const navigate = useNavigate()
 
   const handleRegister = async (e: React.FormEvent, type: 'personal' | 'organization') => {
     e.preventDefault()
+    setIsLoading(true)
+    setError("")
+    setSuccess("")
+    
     try {
       if (type === 'personal') {
-        await api.registerUser({ userid: Date.now().toString(), name, email, password })
+        await api.registerUser({ 
+          userid: Date.now().toString(), 
+          name, 
+          email, 
+          password 
+        })
       } else {
-        await api.registerOrg({ orgid: Date.now().toString(), name, email, password })
+        await api.registerOrg({ 
+          orgid: Date.now().toString(), 
+          name, 
+          email, 
+          password 
+        })
       }
-      navigate("/login")
+      setSuccess("Account created successfully! Redirecting to login...")
+      setTimeout(() => navigate("/login"), 2000)
     } catch (error) {
+      setError("Registration failed. Please try again.")
       console.error("Registration failed:", error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-[80vh] grid place-items-center px-4 fade-in-smooth">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 fade-in">
       <div className="w-full max-w-md">
-        <div className="rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-800/70 backdrop-blur-xl border border-purple-500/30 p-8 shadow-2xl shadow-purple-500/20 relative overflow-hidden hover:border-purple-500/50 transition-all duration-300 subtle-glow magnetic">
-          {/* Animated background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-cyan-500/5" />
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 opacity-60" />
-          
-          <div className="relative z-10">
-            <div className="text-center mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-400 via-pink-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl hover:scale-105 transition-transform duration-300 gentle-float">
-                <UserPlus className="w-10 h-10 text-white" />
-              </div>
-              <h2 className="text-4xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent mb-3 font-mono tracking-wider">
-                JOIN.PANDA
-              </h2>
-              <p className="text-slate-400 text-sm font-mono tracking-widest">CREATE.YOUR.KNOWLEDGE.TRANSFORMATION.ACCOUNT</p>
+        <Card className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl card-hover">
+          <CardHeader className="text-center pb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <UserPlus className="w-8 h-8 text-white" />
             </div>
+            <CardTitle className="text-3xl font-bold text-white mb-2">
+              Join PANDA
+            </CardTitle>
+            <p className="text-gray-400">Create your knowledge transformation account</p>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {error && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
+                {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm text-center">
+                {success}
+              </div>
+            )}
             
             <Tabs defaultValue="personal" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-slate-900/50 border border-white/20 p-1 mb-6 rounded-xl magnetic">
-                <TabsTrigger value="personal" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-purple-600 data-[state=active]:text-white flex items-center space-x-2 font-mono font-bold tracking-wider hover:scale-102 transition-all duration-300 magnetic">
+              <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/20 p-1 mb-6">
+                <TabsTrigger 
+                  value="personal" 
+                  className="data-[state=active]:bg-indigo-500 data-[state=active]:text-white flex items-center space-x-2 font-medium"
+                >
                   <User className="w-4 h-4" />
-                  <span>PERSONAL</span>
+                  <span>Personal</span>
                 </TabsTrigger>
-                <TabsTrigger value="organization" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white flex items-center space-x-2 font-mono font-bold tracking-wider hover:scale-102 transition-all duration-300 magnetic">
+                <TabsTrigger 
+                  value="organization" 
+                  className="data-[state=active]:bg-purple-500 data-[state=active]:text-white flex items-center space-x-2 font-medium"
+                >
                   <Building2 className="w-4 h-4" />
-                  <span>ORGANIZATION</span>
+                  <span>Organization</span>
                 </TabsTrigger>
               </TabsList>
               
               <TabsContent value="personal">
                 <form onSubmit={(e) => handleRegister(e, 'personal')} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-cyan-300 font-mono font-bold text-xs uppercase tracking-widest">FULL.NAME</Label>
+                    <Label htmlFor="name" className="text-gray-300 font-medium">Full Name</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-pulse" />
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <Input 
                         id="name" 
                         value={name} 
                         onChange={(e) => setName(e.target.value)}
                         placeholder="John Doe"
-                        className="pl-11 bg-slate-900/50 border-cyan-500/30 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:glow-cyan font-mono transition-all duration-300 py-4 magnetic"
+                        className="pl-11 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-indigo-400 focus-ring"
+                        required
                       />
                     </div>
                   </div>
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-cyan-300 font-mono font-bold text-xs uppercase tracking-widest">EMAIL.ADDRESS</Label>
+                    <Label htmlFor="email" className="text-gray-300 font-medium">Email Address</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-pulse" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <Input 
                         id="email" 
                         type="email" 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="john@example.com"
-                        className="pl-11 bg-slate-900/50 border-cyan-500/30 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:glow-cyan font-mono transition-all duration-300 py-4 magnetic"
+                        className="pl-11 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-indigo-400 focus-ring"
+                        required
                       />
                     </div>
                   </div>
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-cyan-300 font-mono font-bold text-xs uppercase tracking-widest">PASSWORD</Label>
+                    <Label htmlFor="password" className="text-gray-300 font-medium">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 animate-pulse" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <Input 
                         id="password" 
                         type="password" 
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Create a strong password"
-                        className="pl-11 bg-slate-900/50 border-cyan-500/30 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:glow-cyan font-mono transition-all duration-300 py-4 magnetic"
+                        className="pl-11 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-indigo-400 focus-ring"
+                        required
                       />
                     </div>
                   </div>
-                  <Button type="submit" className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-mono font-bold py-8 rounded-xl shadow-2xl shadow-cyan-500/25 border border-cyan-500/30 hover:scale-105 hover:glow-cyan transition-all duration-300 relative overflow-hidden group tracking-wider magnetic energy-ripple wave-animation">
-                    CREATE.PERSONAL.ACCOUNT
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-full group-hover:translate-x-[-200%] transition-transform duration-700" />
+                  
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-semibold py-6 button-hover disabled:opacity-50"
+                  >
+                    {isLoading ? "Creating Account..." : "Create Personal Account"}
                   </Button>
                 </form>
               </TabsContent>
@@ -111,55 +156,83 @@ const RegisterPage = () => {
               <TabsContent value="organization">
                 <form onSubmit={(e) => handleRegister(e, 'organization')} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="org-name" className="text-purple-300 font-mono font-bold text-xs uppercase tracking-widest">ORGANIZATION.NAME</Label>
+                    <Label htmlFor="org-name" className="text-gray-300 font-medium">Organization Name</Label>
                     <div className="relative">
-                      <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400 animate-pulse" />
+                      <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <Input 
                         id="org-name" 
                         value={name} 
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Acme Corporation"
-                        className="pl-11 bg-slate-900/50 border-purple-500/30 text-white placeholder:text-slate-500 focus:border-purple-400 focus:glow-purple font-mono transition-all duration-300 py-4 magnetic"
+                        className="pl-11 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-purple-400 focus-ring"
+                        required
                       />
                     </div>
                   </div>
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="org-email" className="text-purple-300 font-mono font-bold text-xs uppercase tracking-widest">ADMIN.EMAIL</Label>
+                    <Label htmlFor="org-email" className="text-gray-300 font-medium">Admin Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400 animate-pulse" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <Input 
                         id="org-email" 
                         type="email" 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="admin@company.com"
-                        className="pl-11 bg-slate-900/50 border-purple-500/30 text-white placeholder:text-slate-500 focus:border-purple-400 focus:glow-purple font-mono transition-all duration-300 py-4 magnetic"
+                        className="pl-11 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-purple-400 focus-ring"
+                        required
                       />
                     </div>
                   </div>
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="org-password" className="text-purple-300 font-mono font-bold text-xs uppercase tracking-widest">PASSWORD</Label>
+                    <Label htmlFor="org-password" className="text-gray-300 font-medium">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400 animate-pulse" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <Input 
                         id="org-password" 
                         type="password" 
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Create a strong password"
-                        className="pl-11 bg-slate-900/50 border-purple-500/30 text-white placeholder:text-slate-500 focus:border-purple-400 focus:glow-purple font-mono transition-all duration-300 py-4 magnetic"
+                        className="pl-11 bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-purple-400 focus-ring"
+                        required
                       />
                     </div>
                   </div>
-                  <Button type="submit" className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-mono font-bold py-8 rounded-xl shadow-2xl shadow-purple-500/25 border border-purple-500/30 hover:scale-105 hover:glow-purple transition-all duration-300 relative overflow-hidden group tracking-wider magnetic energy-ripple wave-animation">
-                    CREATE.ORGANIZATION.ACCOUNT
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-full group-hover:translate-x-[-200%] transition-transform duration-700" />
+                  
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-semibold py-6 button-hover disabled:opacity-50"
+                  >
+                    {isLoading ? "Creating Account..." : "Create Organization Account"}
                   </Button>
                 </form>
               </TabsContent>
-                        </Tabs>
-          </div>
-        </div>
+            </Tabs>
+            
+            <div className="text-center pt-4 border-t border-white/10">
+              <p className="text-gray-400 text-sm">
+                Already have an account?{" "}
+                <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
+                  Sign in here
+                </Link>
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <Link 
+                to="/" 
+                className="inline-flex items-center space-x-2 text-gray-400 hover:text-white text-sm font-medium"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to Home</span>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
